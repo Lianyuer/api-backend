@@ -61,6 +61,8 @@ public class InterfaceInfoController {
         interfaceInfoService.validInterfaceInfo(interfaceInfo, true);
         User loginUser = userService.getLoginUser(request);
         interfaceInfo.setUserId(loginUser.getId());
+        String upperCaseMethod = interfaceInfo.getMethod().toUpperCase();
+        interfaceInfo.setMethod(upperCaseMethod);
         boolean result = interfaceInfoService.save(interfaceInfo);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         long newInterfaceInfoId = interfaceInfo.getId();
