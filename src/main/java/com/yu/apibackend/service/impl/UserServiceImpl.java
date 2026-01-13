@@ -16,10 +16,12 @@ import com.yu.apibackend.model.vo.LoginUserVO;
 import com.yu.apibackend.model.vo.UserVO;
 import com.yu.apibackend.service.UserService;
 import com.yu.apibackend.utils.SqlUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +43,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 盐值，混淆密码
      */
     public static final String SALT = "yupi";
+
+    /**
+     * 默认头像地址
+     */
+    private static final String DEFAULT_AVATAR = "https://assets.lyu-cx.cn/default_avatar.png";
 
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
@@ -72,6 +79,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             User user = new User();
             user.setUserAccount(userAccount);
             user.setUserPassword(encryptPassword);
+            user.setUserAvatar(DEFAULT_AVATAR);
             boolean saveResult = this.save(user);
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
