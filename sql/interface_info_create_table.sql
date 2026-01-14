@@ -1,3 +1,8 @@
+-- 创建数据库
+create database if not exists api_open_platform;
+
+use api_open_platform;
+
 -- 创建接口信息表
 create table interface_info
 (
