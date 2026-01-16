@@ -124,6 +124,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         Long id = interfaceInfoQueryRequest.getId();
         String name = interfaceInfoQueryRequest.getName();
         String description = interfaceInfoQueryRequest.getDescription();
+        String url = interfaceInfoQueryRequest.getUrl();
         Integer status = interfaceInfoQueryRequest.getStatus();
         String method = interfaceInfoQueryRequest.getMethod();
         Long userId = interfaceInfoQueryRequest.getUserId();
@@ -133,6 +134,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         // 拼接查询条件
         queryWrapper.like(StringUtils.isNotBlank(name), "name", name);
         queryWrapper.like(StringUtils.isNotBlank(description), "description", description);
+        queryWrapper.like(StringUtils.isNotBlank(url), "url", url);
         queryWrapper.eq(ObjectUtil.isNotEmpty(status), "status", status);
         queryWrapper.eq(StringUtils.isNotBlank(method), "method", method);
         queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
