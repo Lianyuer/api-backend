@@ -1,11 +1,9 @@
 package com.yu.apibackend.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yu.apibackend.annotation.AuthCheck;
-import com.yu.apibackend.common.BaseResponse;
-import com.yu.apibackend.common.DeleteRequest;
-import com.yu.apibackend.common.ErrorCode;
-import com.yu.apibackend.common.ResultUtils;
+import com.yu.apibackend.common.*;
 import com.yu.apibackend.constant.UserConstant;
 import com.yu.apibackend.exception.BusinessException;
 import com.yu.apibackend.exception.ThrowUtils;
@@ -14,9 +12,11 @@ import com.yu.apibackend.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.yu.apibackend.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
 import com.yu.apibackend.model.entity.InterfaceInfo;
 import com.yu.apibackend.model.entity.User;
+import com.yu.apibackend.model.enums.InterfaceInfoStatusEnum;
 import com.yu.apibackend.model.vo.InterfaceInfoVO;
 import com.yu.apibackend.service.InterfaceInfoService;
 import com.yu.apibackend.service.UserService;
+import com.yu.yuapiclientsdk.client.YuApiClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +40,9 @@ public class InterfaceInfoController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private YuApiClient yuApiClient;
 
     // region 增删改查
 
@@ -164,7 +167,7 @@ public class InterfaceInfoController {
      */
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<InterfaceInfoVO>> listInterfaceInfoVOByPage(@RequestBody InterfaceInfoQueryRequest interfaceInfoQueryRequest,
-                                                                HttpServletRequest request) {
+                                                                         HttpServletRequest request) {
         long current = interfaceInfoQueryRequest.getCurrent();
         long size = interfaceInfoQueryRequest.getPageSize();
         // 限制爬虫
@@ -196,6 +199,70 @@ public class InterfaceInfoController {
         Page<InterfaceInfo> interfaceInfoPage = interfaceInfoService.page(new Page<>(current, size),
                 interfaceInfoService.getQueryWrapper(interfaceInfoQueryRequest));
         return ResultUtils.success(interfaceInfoService.getInterfaceInfoVOPage(interfaceInfoPage, request));
+    }
+
+    // endregion
+
+    // region 接口上线 & 接口下线
+
+    /**
+     * 发布接口（仅管理员）
+     *
+     * @param idRequest
+     * @return
+     */
+    @PostMapping("/online")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> onlineInterfaceInfo(@RequestBody IdRequest idRequest) {
+        if (idRequest == null || idRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        BeanUtils.copyProperties(idRequest, interfaceInfo);
+
+        long id = idRequest.getId();
+        // 判断是否存在
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        ThrowUtils.throwIf(oldInterfaceInfo == null, ErrorCode.NOT_FOUND_ERROR);
+        // 判断能否成功调用
+        // 接口名称都是固定的，而不是通过地址来映射到相应的接口，所以只能通过方法名调用接口，后续调整
+        com.yu.yuapiclientsdk.entity.User user = new com.yu.yuapiclientsdk.entity.User();
+        user.setUserName("测试接口调用成功");
+        String userNameByPost = yuApiClient.getUserNameByPost(user);
+        if (userNameByPost.contains("签名错误")) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "接口验证失败");
+        }
+        // 标记状态为已上线
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.ONLINE.getValue());
+        boolean isSuccess = interfaceInfoService.updateById(interfaceInfo);
+        ThrowUtils.throwIf(!isSuccess, ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(true);
+    }
+
+    /**
+     * 下线接口（仅管理员）
+     *
+     * @param idRequest
+     * @return
+     */
+    @PostMapping("/offline")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> offlineInterfaceInfo(@RequestBody IdRequest idRequest) {
+        if (idRequest == null || idRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        BeanUtils.copyProperties(idRequest, interfaceInfo);
+
+        long id = idRequest.getId();
+        // 判断是否存在
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        ThrowUtils.throwIf(oldInterfaceInfo == null, ErrorCode.NOT_FOUND_ERROR);
+        // 标记状态为已下线
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
+        boolean isSuccess = interfaceInfoService.updateById(interfaceInfo);
+        ThrowUtils.throwIf(!isSuccess, ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(true);
     }
 
     // endregion

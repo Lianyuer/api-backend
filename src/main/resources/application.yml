@@ -101,3 +101,7 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.yu.apibackend.controller
+yuapi:
+  client:
+    access-key: testAccessKey
+    secret-key: testSecretKey
