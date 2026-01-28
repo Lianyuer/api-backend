@@ -11,6 +11,7 @@ create table interface_info
     name           varchar(256)                       not null comment '接口名称',
     description    varchar(256)                       null comment '接口描述',
     url            varchar(512)                       not null comment '接口地址',
+    requestParams  text                               null comment '请求参数',
     requestHeader  varchar(512)                       null comment '请求头',
     responseHeader varchar(512)                       null comment '响应头',
     status         tinyint  default 0                 not null comment '接口状态 0-关闭，1-开启',

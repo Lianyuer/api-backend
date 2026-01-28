@@ -56,6 +56,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         String name = interfaceInfo.getName();
         String description = interfaceInfo.getDescription();
         String url = interfaceInfo.getUrl();
+        String requestParams = interfaceInfo.getRequestParams();
         String requestHeader = interfaceInfo.getRequestHeader();
         String responseHeader = interfaceInfo.getResponseHeader();
         String method = interfaceInfo.getMethod();
@@ -73,6 +74,9 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         }
         if (StringUtils.isNotBlank(url) && url.length() > 512) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "地址过长");
+        }
+        if (StringUtils.isNotBlank(requestParams) && requestParams.length() > 512) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数过长");
         }
         if (StringUtils.isNotBlank(requestHeader) && requestHeader.length() > 512) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求头过长");
