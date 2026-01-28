@@ -65,7 +65,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
             ThrowUtils.throwIf(StringUtils.isAnyBlank(name, url, method), ErrorCode.PARAMS_ERROR);
         }
         // 有参数则校验
-        if (StringUtils.isNotBlank(name) && name.length() > 15) {
+        if (StringUtils.isNotBlank(name) && name.length() > 25) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "名称过长");
         }
         if (StringUtils.isNotBlank(description) && description.length() > 50) {
