@@ -3,6 +3,8 @@ package com.yu.apibackend.service.impl;
 import static com.yu.apibackend.constant.UserConstant.USER_LOGIN_STATE;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yu.apibackend.common.ErrorCode;
@@ -75,11 +77,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
             // 2. 加密
             String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
-            // 3. 插入数据
+            // 3. 生成 ak 和 sk
+            String ak = DigestUtil.md5Hex(SALT + userAccount + RandomUtil.randomNumbers(5));
+            String sk = DigestUtil.md5Hex(SALT + userAccount + RandomUtil.randomNumbers(8));
+            // 4. 插入数据
             User user = new User();
             user.setUserAccount(userAccount);
             user.setUserPassword(encryptPassword);
             user.setUserAvatar(DEFAULT_AVATAR);
+            user.setAccessKey(ak);
+            user.setSecretKey(sk);
             boolean saveResult = this.save(user);
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
