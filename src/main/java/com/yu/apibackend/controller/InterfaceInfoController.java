@@ -1,12 +1,14 @@
 package com.yu.apibackend.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.gson.Gson;
 import com.yu.apibackend.annotation.AuthCheck;
 import com.yu.apibackend.common.*;
 import com.yu.apibackend.constant.UserConstant;
 import com.yu.apibackend.exception.BusinessException;
 import com.yu.apibackend.exception.ThrowUtils;
 import com.yu.apibackend.model.dto.interfaceinfo.InterfaceInfoAddRequest;
+import com.yu.apibackend.model.dto.interfaceinfo.InterfaceInfoInvokeRequest;
 import com.yu.apibackend.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.yu.apibackend.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
 import com.yu.apibackend.model.entity.InterfaceInfo;
@@ -265,5 +267,42 @@ public class InterfaceInfoController {
     }
 
     // endregion
+
+    /**
+     * 在线调用接口
+     *
+     * @param interfaceInfoInvokeRequest
+     * @return
+     */
+    @PostMapping("/invoke")
+    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest, HttpServletRequest request) {
+        if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 获取接口 id
+        Long id = interfaceInfoInvokeRequest.getId();
+        // 获取输入的请求参数
+        String requestParams = interfaceInfoInvokeRequest.getRequestParams();
+        // 判断是否存在
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        ThrowUtils.throwIf(oldInterfaceInfo == null, ErrorCode.NOT_FOUND_ERROR);
+        // 检查接口是否下线
+        if (oldInterfaceInfo.getStatus().equals(InterfaceInfoStatusEnum.OFFLINE.getValue())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口已下线");
+        }
+        // 获取用户信息
+        User loginUser = userService.getLoginUser(request);
+        String accessKey = loginUser.getAccessKey();
+        String secretKey = loginUser.getSecretKey();
+        // 我们只需要进行测试调用，所以我们需要解析传递过来的参数
+        Gson gson = new Gson();
+        // 将用户请求参数转换为com.yu.yuapiclientsdk.entity.User对象
+        com.yu.yuapiclientsdk.entity.User user = gson.fromJson(requestParams, com.yu.yuapiclientsdk.entity.User.class);
+        // 创建一个临时的YuApiClient对象，并传入ak和sk
+        YuApiClient tempClient = new YuApiClient(accessKey, secretKey);
+        // 调用YuApiClient的getUsernameByPost方法，传入用户对象，获取用户名
+        String userNameByPost = tempClient.getUserNameByPost(user);
+        return ResultUtils.success(userNameByPost);
+    }
 
 }
