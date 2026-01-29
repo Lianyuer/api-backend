@@ -294,15 +294,11 @@ public class InterfaceInfoController {
         User loginUser = userService.getLoginUser(request);
         String accessKey = loginUser.getAccessKey();
         String secretKey = loginUser.getSecretKey();
-        // 我们只需要进行测试调用，所以我们需要解析传递过来的参数
-        Gson gson = new Gson();
-        // 将用户请求参数转换为com.yu.yuapiclientsdk.entity.User对象
-        com.yu.yuapiclientsdk.entity.User user = gson.fromJson(requestParams, com.yu.yuapiclientsdk.entity.User.class);
         // 创建一个临时的YuApiClient对象，并传入ak和sk
         YuApiClient tempClient = new YuApiClient(accessKey, secretKey);
-        // 调用YuApiClient的getUsernameByPost方法，传入用户对象，获取用户名
-        String userNameByPost = tempClient.getUserNameByPost(user);
-        return ResultUtils.success(userNameByPost);
+        // 调用YuApiClient的invokeInterface,利用client调用接口
+        String result = tempClient.invokeInterface(oldInterfaceInfo.getMethod(), oldInterfaceInfo.getUrl(), requestParams);
+        return ResultUtils.success(result);
     }
 
 }
