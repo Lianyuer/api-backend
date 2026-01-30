@@ -1,7 +1,7 @@
 package com.yu.apibackend.controller;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.gson.Gson;
 import com.yu.apibackend.annotation.AuthCheck;
 import com.yu.apibackend.common.*;
 import com.yu.apibackend.constant.UserConstant;
@@ -229,10 +229,11 @@ public class InterfaceInfoController {
         // 接口名称都是固定的，而不是通过地址来映射到相应的接口，所以只能通过方法名调用接口，后续调整
         com.yu.yuapiclientsdk.entity.User user = new com.yu.yuapiclientsdk.entity.User();
         user.setUserName("测试接口调用成功");
-        String userNameByPost = yuApiClient.getUserNameByPost(user);
-        if (userNameByPost.contains("签名错误")) {
+        Object result = yuApiClient.getUserNameByPost(user);
+        // TODO: 通过接口地址而非方法验证接口是否可调用
+        /*if (result.getMessage().contains("签名错误")) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "接口验证失败");
-        }
+        }*/
         // 标记状态为已上线
         interfaceInfo.setStatus(InterfaceInfoStatusEnum.ONLINE.getValue());
         boolean isSuccess = interfaceInfoService.updateById(interfaceInfo);
@@ -275,7 +276,7 @@ public class InterfaceInfoController {
      * @return
      */
     @PostMapping("/invoke")
-    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest, HttpServletRequest request) {
+    public BaseResponse<?> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest, HttpServletRequest request) {
         if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -297,8 +298,27 @@ public class InterfaceInfoController {
         // 创建一个临时的YuApiClient对象，并传入ak和sk
         YuApiClient tempClient = new YuApiClient(accessKey, secretKey);
         // 调用YuApiClient的invokeInterface,利用client调用接口
-        String result = tempClient.invokeInterface(oldInterfaceInfo.getMethod(), oldInterfaceInfo.getUrl(), requestParams);
-        return ResultUtils.success(result);
+        Object result =  tempClient.invokeInterface(oldInterfaceInfo.getMethod(), oldInterfaceInfo.getUrl(), requestParams);
+        // 解析结果
+        if (result instanceof com.yu.yuapiclientsdk.common.BaseResponse) {
+            com.yu.yuapiclientsdk.common.BaseResponse sdkResponse =
+                    (com.yu.yuapiclientsdk.common.BaseResponse) result;
+            int code = sdkResponse.getCode();
+            Object data = sdkResponse.getData();
+            String message = sdkResponse.getMessage();
+
+            // 转换为后端的BaseResponse
+            com.yu.apibackend.common.BaseResponse<?> response;
+            if (code == 0) {
+                response = ResultUtils.success(data);
+            } else {
+                response = ResultUtils.error(code, message);
+            }
+            return response;
+        } else {
+            // 如果返回的不是BaseResponse，直接包装
+            return ResultUtils.success(result);
+        }
     }
 
 }
