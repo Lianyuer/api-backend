@@ -22,3 +22,19 @@ create table interface_info
     isDelete       tinyint  default 0                 null comment '是否删除，默认否（0）'
 )
     comment '接口信息表';
+
+# 创建用户调用接口关系表
+create table user_interface_info
+(
+    id              bigint                             not null comment '主键id'
+        primary key,
+    userId          bigint                             not null comment '调用用户id',
+    interfaceInfoId bigint                             not null comment '接口id',
+    totalNum        int                                not null comment '总调用次数',
+    leftNum         int                                not null comment '剩余可调用次数',
+    status          int                                null comment '状态（0-正常，1-禁用）',
+    isDeleted       tinyint  default 0                 not null comment '是否删除（0-未删，1-已删）',
+    createTime      datetime                           not null comment '创建时间',
+    updateTime      datetime default CURRENT_TIMESTAMP not null comment '更新时间'
+)
+    comment '用户调用接口关系表';
