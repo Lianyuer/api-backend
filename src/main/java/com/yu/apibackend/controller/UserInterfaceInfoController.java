@@ -1,16 +1,22 @@
 package com.yu.apibackend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yu.apibackend.annotation.AuthCheck;
 import com.yu.apibackend.common.BaseResponse;
+import com.yu.apibackend.common.DeleteRequest;
 import com.yu.apibackend.common.ErrorCode;
 import com.yu.apibackend.common.ResultUtils;
+import com.yu.apibackend.constant.UserConstant;
 import com.yu.apibackend.exception.BusinessException;
 import com.yu.apibackend.exception.ThrowUtils;
 import com.yu.apibackend.model.dto.userinterfaceinfo.UserInterfaceInfoAddRequest;
 import com.yu.apibackend.model.dto.userinterfaceinfo.UserInterfaceInfoQueryRequest;
 import com.yu.apibackend.model.dto.userinterfaceinfo.UserInterfaceInfoUpdateRequest;
+import com.yu.apibackend.model.entity.InterfaceInfo;
 import com.yu.apibackend.model.entity.User;
 import com.yu.apibackend.model.entity.UserInterfaceInfo;
+import com.yu.apibackend.service.InterfaceInfoService;
 import com.yu.apibackend.service.UserInterfaceInfoService;
 import com.yu.apibackend.service.UserService;
 import org.springframework.beans.BeanUtils;
@@ -28,6 +34,9 @@ public class UserInterfaceInfoController {
     private UserService userService;
 
     @Resource
+    private InterfaceInfoService interfaceInfoService;
+
+    @Resource
     private UserInterfaceInfoService userInterfaceInfoService;
 
     /**
@@ -37,8 +46,8 @@ public class UserInterfaceInfoController {
      * @return
      */
     @PostMapping("/add")
-    public BaseResponse<Long> addUserInterfaceInfo(@RequestBody UserInterfaceInfoAddRequest userInterfaceInfoAddRequest,
-                                                   HttpServletRequest request) {
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Long> addUserInterfaceInfo(@RequestBody UserInterfaceInfoAddRequest userInterfaceInfoAddRequest) {
         if (userInterfaceInfoAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -46,8 +55,20 @@ public class UserInterfaceInfoController {
         BeanUtils.copyProperties(userInterfaceInfoAddRequest, userInterfaceInfo);
         // 校验
         userInterfaceInfoService.validateUserInterfaceInfo(userInterfaceInfo, true);
-        User loginUser = userService.getLoginUser(request);
-        userInterfaceInfo.setUserId(loginUser.getId());
+        // 判断用户是否存在
+        Long userId = userInterfaceInfoAddRequest.getUserId();
+        User user = userService.getById(userId);
+        ThrowUtils.throwIf(user == null, ErrorCode.NOT_FOUND_ERROR, "用户不存在");
+        // 判断接口是否存在
+        Long interfaceInfoId = userInterfaceInfoAddRequest.getInterfaceInfoId();
+        InterfaceInfo interfaceInfo = interfaceInfoService.getById(interfaceInfoId);
+        ThrowUtils.throwIf(interfaceInfo == null, ErrorCode.NOT_FOUND_ERROR, "接口不存在");
+        // 判断用户调用接口记录是否存在
+        boolean isUserInterfaceInfoExist = userInterfaceInfoService.lambdaQuery()
+                .eq(UserInterfaceInfo::getUserId, userId)
+                .eq(UserInterfaceInfo::getInterfaceInfoId, interfaceInfoId)
+                .exists();
+        ThrowUtils.throwIf(isUserInterfaceInfoExist, ErrorCode.PARAMS_ERROR, "用户接口调用关系已存在");
         boolean isSaved = userInterfaceInfoService.save(userInterfaceInfo);
         ThrowUtils.throwIf(!isSaved, ErrorCode.OPERATION_ERROR);
         Long newUserInterfaceInfoId = userInterfaceInfo.getId();
@@ -61,6 +82,7 @@ public class UserInterfaceInfoController {
      * @return
      */
     @PostMapping("/update")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> updateUserInterfaceInfo(@RequestBody UserInterfaceInfoUpdateRequest userInterfaceInfoUpdateRequest,
                                                       HttpServletRequest request) {
         if (userInterfaceInfoUpdateRequest == null) {
@@ -68,10 +90,10 @@ public class UserInterfaceInfoController {
         }
         UserInterfaceInfo userInterfaceInfo = new UserInterfaceInfo();
         BeanUtils.copyProperties(userInterfaceInfoUpdateRequest, userInterfaceInfo);
-        // 校验
-        userInterfaceInfoService.validateUserInterfaceInfo(userInterfaceInfo, false);
         User loginUser = userService.getLoginUser(request);
         Long id = userInterfaceInfoUpdateRequest.getId();
+        // 校验
+        userInterfaceInfoService.validateUserInterfaceInfo(userInterfaceInfo, false);
         // 判断是否存在
         UserInterfaceInfo oldUserInterfaceInfo = userInterfaceInfoService.getById(id);
         ThrowUtils.throwIf(oldUserInterfaceInfo == null, ErrorCode.NOT_FOUND_ERROR);
@@ -86,15 +108,61 @@ public class UserInterfaceInfoController {
     }
 
     /**
+     * 删除
+     *
+     * @param deleteRequest
+     * @return
+     */
+    @PostMapping("/delete")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> deleteUserInterfaceInfo(@RequestBody DeleteRequest deleteRequest) {
+        ThrowUtils.throwIf(deleteRequest == null || deleteRequest.getId() <= 0, ErrorCode.PARAMS_ERROR);
+        boolean isSuccess = userInterfaceInfoService.removeById(deleteRequest.getId());
+        ThrowUtils.throwIf(!isSuccess, ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(true);
+    }
+
+    /**
+     * 根据 id 查询
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/get")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<UserInterfaceInfo> getUserInterfaceInfoById(Long id) {
+        ThrowUtils.throwIf(id == null || id <= 0, ErrorCode.PARAMS_ERROR);
+        UserInterfaceInfo userInterfaceInfo = userInterfaceInfoService.getById(id);
+        return ResultUtils.success(userInterfaceInfo);
+    }
+
+    /**
      * 查询
      *
      * @param userInterfaceInfoQueryRequest
      * @return
      */
     @GetMapping("/list")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<List<UserInterfaceInfo>> listUserInterfaceInfo(UserInterfaceInfoQueryRequest userInterfaceInfoQueryRequest) {
         QueryWrapper<UserInterfaceInfo> queryWrapper = userInterfaceInfoService.getQueryWrapper(userInterfaceInfoQueryRequest);
         List<UserInterfaceInfo> userInterfaceInfoList = userInterfaceInfoService.list(queryWrapper);
+        return ResultUtils.success(userInterfaceInfoList);
+    }
+
+    /**
+     * 分页查询
+     *
+     * @param userInterfaceInfoQueryRequest
+     * @return
+     */
+    @GetMapping("/list/page")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Page<UserInterfaceInfo>> listUserInterfaceInfoByPage(UserInterfaceInfoQueryRequest userInterfaceInfoQueryRequest) {
+        int current = userInterfaceInfoQueryRequest.getCurrent();
+        int pageSize = userInterfaceInfoQueryRequest.getPageSize();
+        QueryWrapper<UserInterfaceInfo> queryWrapper = userInterfaceInfoService.getQueryWrapper(userInterfaceInfoQueryRequest);
+        Page<UserInterfaceInfo> userInterfaceInfoList = userInterfaceInfoService.page(new Page<>(current, pageSize), queryWrapper);
         return ResultUtils.success(userInterfaceInfoList);
     }
 }

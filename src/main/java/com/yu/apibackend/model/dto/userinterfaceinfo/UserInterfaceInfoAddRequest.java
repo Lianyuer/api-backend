@@ -6,12 +6,23 @@ import lombok.Data;
 public class UserInterfaceInfoAddRequest {
 
     /**
-     * 用户 id
+     * 调用用户id
      */
     private Long userId;
 
     /**
-     * 接口 id
+     * 接口id
      */
     private Long interfaceInfoId;
+
+    /**
+     * 总调用次数
+     */
+    private Integer totalNum;
+
+    /**
+     * 剩余可调用次数
+     */
+    private Integer leftNum;
+
 }

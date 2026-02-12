@@ -1,15 +1,19 @@
 package com.yu.apibackend.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.util.Date;
+
 import lombok.Data;
 
 /**
  * 用户调用接口关系表
+ *
  * @TableName user_interface_info
  */
-@TableName(value ="user_interface_info")
+@TableName(value = "user_interface_info")
 @Data
 public class UserInterfaceInfo {
     /**
@@ -46,6 +50,7 @@ public class UserInterfaceInfo {
     /**
      * 是否删除（0-未删，1-已删）
      */
+    @TableLogic
     private Integer isDeleted;
 
     /**
