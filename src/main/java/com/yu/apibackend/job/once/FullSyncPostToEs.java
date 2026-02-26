@@ -2,7 +2,7 @@ package com.yu.apibackend.job.once;
 
 import com.yu.apibackend.esdao.PostEsDao;
 import com.yu.apibackend.model.dto.post.PostEsDTO;
-import com.yu.apibackend.model.entity.Post;
+import com.yu.apicommon.model.entity.Post;
 import com.yu.apibackend.service.PostService;
 import java.util.List;
 import java.util.stream.Collectors;

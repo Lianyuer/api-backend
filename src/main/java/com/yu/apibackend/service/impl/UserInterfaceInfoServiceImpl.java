@@ -8,10 +8,10 @@ import com.yu.apibackend.constant.CommonConstant;
 import com.yu.apibackend.exception.ThrowUtils;
 import com.yu.apibackend.mapper.UserInterfaceInfoMapper;
 import com.yu.apibackend.model.dto.userinterfaceinfo.UserInterfaceInfoQueryRequest;
-import com.yu.apibackend.model.entity.UserInterfaceInfo;
 import com.yu.apibackend.model.enums.UserInterfaceInfoStatusEnum;
 import com.yu.apibackend.service.UserInterfaceInfoService;
 import com.yu.apibackend.utils.SqlUtils;
+import com.yu.apicommon.model.entity.UserInterfaceInfo;
 import org.springframework.stereotype.Service;
 
 /**

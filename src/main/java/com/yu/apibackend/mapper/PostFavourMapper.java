@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yu.apibackend.model.entity.Post;
-import com.yu.apibackend.model.entity.PostFavour;
+import com.yu.apicommon.model.entity.Post;
+import com.yu.apicommon.model.entity.PostFavour;
 import org.apache.ibatis.annotations.Param;
 
 /**

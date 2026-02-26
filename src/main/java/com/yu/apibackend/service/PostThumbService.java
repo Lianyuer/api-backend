@@ -1,8 +1,8 @@
 package com.yu.apibackend.service;
 
-import com.yu.apibackend.model.entity.PostThumb;
+import com.yu.apicommon.model.entity.PostThumb;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.yu.apibackend.model.entity.User;
+import com.yu.apicommon.model.entity.User;
 
 /**
  * 帖子点赞服务

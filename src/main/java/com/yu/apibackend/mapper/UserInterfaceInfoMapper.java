@@ -1,7 +1,7 @@
 package com.yu.apibackend.mapper;
 
-import com.yu.apibackend.model.entity.UserInterfaceInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.yu.apicommon.model.entity.UserInterfaceInfo;
 
 /**
 * @author liany

@@ -8,13 +8,15 @@ import com.yu.apibackend.constant.FileConstant;
 import com.yu.apibackend.exception.BusinessException;
 import com.yu.apibackend.manager.CosManager;
 import com.yu.apibackend.model.dto.file.UploadFileRequest;
-import com.yu.apibackend.model.entity.User;
+import com.yu.apicommon.model.entity.User;
 import com.yu.apibackend.model.enums.FileUploadBizEnum;
 import com.yu.apibackend.service.UserService;
 import java.io.File;
 import java.util.Arrays;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import com.yu.apicommon.model.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.web.bind.annotation.PostMapping;

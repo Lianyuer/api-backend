@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yu.apibackend.model.dto.post.PostQueryRequest;
-import com.yu.apibackend.model.entity.Post;
-import com.yu.apibackend.model.vo.PostVO;
+import com.yu.apicommon.model.entity.Post;
+import com.yu.apicommon.model.vo.PostVO;
 import javax.servlet.http.HttpServletRequest;
 
 /**

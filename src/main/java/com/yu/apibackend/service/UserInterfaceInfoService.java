@@ -2,8 +2,8 @@ package com.yu.apibackend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yu.apibackend.model.dto.userinterfaceinfo.UserInterfaceInfoQueryRequest;
-import com.yu.apibackend.model.entity.UserInterfaceInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yu.apicommon.model.entity.UserInterfaceInfo;
 
 /**
  * @author liany

@@ -12,10 +12,7 @@ import com.yu.apibackend.constant.CommonConstant;
 import com.yu.apibackend.exception.BusinessException;
 import com.yu.apibackend.mapper.UserMapper;
 import com.yu.apibackend.model.dto.user.UserQueryRequest;
-import com.yu.apibackend.model.entity.User;
-import com.yu.apibackend.model.enums.UserRoleEnum;
-import com.yu.apibackend.model.vo.LoginUserVO;
-import com.yu.apibackend.model.vo.UserVO;
+
 import com.yu.apibackend.service.UserService;
 import com.yu.apibackend.utils.SqlUtils;
 
@@ -24,6 +21,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
+import com.yu.apicommon.model.entity.User;
+import com.yu.apicommon.model.enums.UserRoleEnum;
+import com.yu.apicommon.model.vo.LoginUserVO;
+import com.yu.apicommon.model.vo.UserVO;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import org.apache.commons.lang3.StringUtils;

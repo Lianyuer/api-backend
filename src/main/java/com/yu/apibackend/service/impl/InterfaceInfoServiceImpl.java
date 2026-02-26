@@ -1,7 +1,6 @@
 package com.yu.apibackend.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,10 +11,10 @@ import com.yu.apibackend.exception.BusinessException;
 import com.yu.apibackend.exception.ThrowUtils;
 import com.yu.apibackend.mapper.InterfaceInfoMapper;
 import com.yu.apibackend.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
-import com.yu.apibackend.model.entity.*;
-import com.yu.apibackend.model.enums.InterfaceMethodEnum;
-import com.yu.apibackend.model.vo.InterfaceInfoVO;
-import com.yu.apibackend.model.vo.UserVO;
+import com.yu.apicommon.model.entity.*;
+import com.yu.apicommon.model.enums.InterfaceMethodEnum;
+import com.yu.apicommon.model.vo.InterfaceInfoVO;
+import com.yu.apicommon.model.vo.UserVO;
 import com.yu.apibackend.service.InterfaceInfoService;
 import com.yu.apibackend.service.UserService;
 import com.yu.apibackend.utils.SqlUtils;

@@ -1,12 +1,12 @@
-package com.yu.apibackend.model.entity;
+package com.yu.apicommon.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
-
-import java.util.Date;
-
 import lombok.Data;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 用户调用接口关系表
@@ -15,7 +15,7 @@ import lombok.Data;
  */
 @TableName(value = "user_interface_info")
 @Data
-public class UserInterfaceInfo {
+public class UserInterfaceInfo implements Serializable {
     /**
      * 主键id
      */

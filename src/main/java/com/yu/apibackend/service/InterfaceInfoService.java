@@ -3,9 +3,9 @@ package com.yu.apibackend.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yu.apibackend.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
-import com.yu.apibackend.model.entity.InterfaceInfo;
+import com.yu.apicommon.model.entity.InterfaceInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.yu.apibackend.model.vo.InterfaceInfoVO;
+import com.yu.apicommon.model.vo.InterfaceInfoVO;
 
 import javax.servlet.http.HttpServletRequest;
 

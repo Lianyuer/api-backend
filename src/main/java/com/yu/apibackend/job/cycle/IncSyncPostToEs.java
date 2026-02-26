@@ -3,7 +3,7 @@ package com.yu.apibackend.job.cycle;
 import com.yu.apibackend.esdao.PostEsDao;
 import com.yu.apibackend.mapper.PostMapper;
 import com.yu.apibackend.model.dto.post.PostEsDTO;
-import com.yu.apibackend.model.entity.Post;
+import com.yu.apicommon.model.entity.Post;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;

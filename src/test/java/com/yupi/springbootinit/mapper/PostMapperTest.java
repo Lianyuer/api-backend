@@ -1,6 +1,7 @@
-package com.yu.apibackend.mapper;
+package com.yupi.springbootinit.mapper;
 
-import com.yu.apibackend.model.entity.Post;
+import com.yu.apibackend.mapper.PostMapper;
+import com.yu.apicommon.model.entity.Post;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;

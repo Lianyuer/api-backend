@@ -13,12 +13,12 @@ import com.yu.apibackend.exception.ThrowUtils;
 import com.yu.apibackend.model.dto.userinterfaceinfo.UserInterfaceInfoAddRequest;
 import com.yu.apibackend.model.dto.userinterfaceinfo.UserInterfaceInfoQueryRequest;
 import com.yu.apibackend.model.dto.userinterfaceinfo.UserInterfaceInfoUpdateRequest;
-import com.yu.apibackend.model.entity.InterfaceInfo;
-import com.yu.apibackend.model.entity.User;
-import com.yu.apibackend.model.entity.UserInterfaceInfo;
+import com.yu.apicommon.model.entity.InterfaceInfo;
+import com.yu.apicommon.model.entity.User;
 import com.yu.apibackend.service.InterfaceInfoService;
 import com.yu.apibackend.service.UserInterfaceInfoService;
 import com.yu.apibackend.service.UserService;
+import com.yu.apicommon.model.entity.UserInterfaceInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 

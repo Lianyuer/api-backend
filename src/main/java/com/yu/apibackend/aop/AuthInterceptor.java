@@ -3,7 +3,7 @@ package com.yu.apibackend.aop;
 import com.yu.apibackend.annotation.AuthCheck;
 import com.yu.apibackend.common.ErrorCode;
 import com.yu.apibackend.exception.BusinessException;
-import com.yu.apibackend.model.entity.User;
+import com.yu.apicommon.model.entity.User;
 import com.yu.apibackend.model.enums.UserRoleEnum;
 import com.yu.apibackend.service.UserService;
 import org.aspectj.lang.ProceedingJoinPoint;

@@ -1,6 +1,6 @@
 package com.yu.apibackend.mapper;
 
-import com.yu.apibackend.model.entity.InterfaceInfo;
+import com.yu.apicommon.model.entity.InterfaceInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

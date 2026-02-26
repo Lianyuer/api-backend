@@ -1,6 +1,5 @@
 package com.yu.apibackend.controller;
 
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yu.apibackend.annotation.AuthCheck;
 import com.yu.apibackend.common.*;
@@ -11,10 +10,10 @@ import com.yu.apibackend.model.dto.interfaceinfo.InterfaceInfoAddRequest;
 import com.yu.apibackend.model.dto.interfaceinfo.InterfaceInfoInvokeRequest;
 import com.yu.apibackend.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.yu.apibackend.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
-import com.yu.apibackend.model.entity.InterfaceInfo;
-import com.yu.apibackend.model.entity.User;
-import com.yu.apibackend.model.enums.InterfaceInfoStatusEnum;
-import com.yu.apibackend.model.vo.InterfaceInfoVO;
+import com.yu.apicommon.model.entity.InterfaceInfo;
+import com.yu.apicommon.model.entity.User;
+import com.yu.apicommon.model.enums.InterfaceInfoStatusEnum;
+import com.yu.apicommon.model.vo.InterfaceInfoVO;
 import com.yu.apibackend.service.InterfaceInfoService;
 import com.yu.apibackend.service.UserService;
 import com.yu.yuapiclientsdk.client.YuApiClient;

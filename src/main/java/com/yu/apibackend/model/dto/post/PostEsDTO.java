@@ -2,7 +2,7 @@ package com.yu.apibackend.model.dto.post;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
-import com.yu.apibackend.model.entity.Post;
+import com.yu.apicommon.model.entity.Post;
 import lombok.Data;
 
 import org.apache.commons.lang3.StringUtils;

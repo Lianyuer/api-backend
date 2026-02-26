@@ -1,7 +1,9 @@
-package com.yu.apibackend.service;
+package com.yupi.springbootinit.service;
 
-import com.yu.apibackend.model.entity.User;
+import com.yu.apicommon.model.entity.User;
 import javax.annotation.Resource;
+
+import com.yu.apibackend.service.PostThumbService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

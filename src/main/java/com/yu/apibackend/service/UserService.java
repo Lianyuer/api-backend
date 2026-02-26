@@ -3,11 +3,13 @@ package com.yu.apibackend.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yu.apibackend.model.dto.user.UserQueryRequest;
-import com.yu.apibackend.model.entity.User;
-import com.yu.apibackend.model.vo.LoginUserVO;
-import com.yu.apibackend.model.vo.UserVO;
+
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+
+import com.yu.apicommon.model.entity.User;
+import com.yu.apicommon.model.vo.LoginUserVO;
+import com.yu.apicommon.model.vo.UserVO;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 
 /**

@@ -5,7 +5,7 @@ import com.yu.apibackend.common.ErrorCode;
 import com.yu.apibackend.common.ResultUtils;
 import com.yu.apibackend.exception.BusinessException;
 import com.yu.apibackend.model.dto.postthumb.PostThumbAddRequest;
-import com.yu.apibackend.model.entity.User;
+import com.yu.apicommon.model.entity.User;
 import com.yu.apibackend.service.PostThumbService;
 import com.yu.apibackend.service.UserService;
 import javax.annotation.Resource;
