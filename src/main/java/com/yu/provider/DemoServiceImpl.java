@@ -1,4 +1,4 @@
-package com.yu.apibackend.provider;
+package com.yu.provider;
 
 import org.apache.dubbo.config.annotation.DubboService;
 
