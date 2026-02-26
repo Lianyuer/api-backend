@@ -119,3 +119,5 @@ dubbo:
     # 配置注册中心为 Nacos，使用的地址是 nacos://localhost:8848
     id: nacos-registry
     address: nacos://localhost:8848?username=nacos&password=nacos
+  scan:
+    base-packages: com.yu.provider  # 确保扫描到你的服务实现类
