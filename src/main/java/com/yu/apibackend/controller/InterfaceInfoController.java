@@ -226,10 +226,16 @@ public class InterfaceInfoController {
         ThrowUtils.throwIf(oldInterfaceInfo == null, ErrorCode.NOT_FOUND_ERROR);
         // 判断能否成功调用
         // 接口名称都是固定的，而不是通过地址来映射到相应的接口，所以只能通过方法名调用接口，后续调整
-        com.yu.yuapiclientsdk.entity.User user = new com.yu.yuapiclientsdk.entity.User();
-        user.setUserName("测试接口调用成功");
-        Object result = yuApiClient.getUserNameByPost(user);
+//        com.yu.yuapiclientsdk.entity.User user = new com.yu.yuapiclientsdk.entity.User();
+//        user.setUserName("测试接口调用成功");
+//        Object result = yuApiClient.getUserNameByPost(user);
         // TODO: 通过接口地址而非方法验证接口是否可调用
+        try {
+            yuApiClient.invokeInterface(oldInterfaceInfo.getMethod(), oldInterfaceInfo.getUrl(), null);
+            log.info("验证接口调用成功");
+        } catch (Exception e) {
+            log.error("接口调用失败，无法发布");
+        }
         /*if (result.getMessage().contains("签名错误")) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "接口验证失败");
         }*/
@@ -297,7 +303,7 @@ public class InterfaceInfoController {
         // 创建一个临时的YuApiClient对象，并传入ak和sk
         YuApiClient tempClient = new YuApiClient(accessKey, secretKey);
         // 调用YuApiClient的invokeInterface,利用client调用接口
-        Object result =  tempClient.invokeInterface(oldInterfaceInfo.getMethod(), oldInterfaceInfo.getUrl(), requestParams);
+        Object result = tempClient.invokeInterface(oldInterfaceInfo.getMethod(), oldInterfaceInfo.getUrl(), requestParams);
         // 解析结果
         if (result instanceof com.yu.yuapiclientsdk.common.BaseResponse) {
             com.yu.yuapiclientsdk.common.BaseResponse sdkResponse =
