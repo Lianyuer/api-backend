@@ -21,4 +21,12 @@
         totalNum,leftNum,status,
         isDeleted,createTime,updateTime
     </sql>
+
+    <select id="listTopInvokeInterfaceInfo" resultType="com.yu.apicommon.model.entity.UserInterfaceInfo">
+        select interfaceInfoId, sum(totalNum) as totalNum
+        from user_interface_info
+        group by interfaceInfoId
+        order by totalNum desc
+        limit #{limit};
+    </select>
 </mapper>

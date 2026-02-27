@@ -58,6 +58,11 @@ public class InterfaceInfoVO {
     private String method;
 
     /**
+     * 调用次数
+     */
+    private Integer totalNum;
+
+    /**
      * 创建人
      */
     private UserVO userVO;
