@@ -51,28 +51,8 @@ public class UserInterfaceInfoController {
         if (userInterfaceInfoAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        UserInterfaceInfo userInterfaceInfo = new UserInterfaceInfo();
-        BeanUtils.copyProperties(userInterfaceInfoAddRequest, userInterfaceInfo);
-        // 校验
-        userInterfaceInfoService.validateUserInterfaceInfo(userInterfaceInfo, true);
-        // 判断用户是否存在
-        Long userId = userInterfaceInfoAddRequest.getUserId();
-        User user = userService.getById(userId);
-        ThrowUtils.throwIf(user == null, ErrorCode.NOT_FOUND_ERROR, "用户不存在");
-        // 判断接口是否存在
-        Long interfaceInfoId = userInterfaceInfoAddRequest.getInterfaceInfoId();
-        InterfaceInfo interfaceInfo = interfaceInfoService.getById(interfaceInfoId);
-        ThrowUtils.throwIf(interfaceInfo == null, ErrorCode.NOT_FOUND_ERROR, "接口不存在");
-        // 判断用户调用接口记录是否存在
-        boolean isUserInterfaceInfoExist = userInterfaceInfoService.lambdaQuery()
-                .eq(UserInterfaceInfo::getUserId, userId)
-                .eq(UserInterfaceInfo::getInterfaceInfoId, interfaceInfoId)
-                .exists();
-        ThrowUtils.throwIf(isUserInterfaceInfoExist, ErrorCode.PARAMS_ERROR, "用户接口调用关系已存在");
-        boolean isSaved = userInterfaceInfoService.save(userInterfaceInfo);
-        ThrowUtils.throwIf(!isSaved, ErrorCode.OPERATION_ERROR);
-        Long newUserInterfaceInfoId = userInterfaceInfo.getId();
-        return ResultUtils.success(newUserInterfaceInfoId);
+        Long id = userInterfaceInfoService.addUserInterfaceInfo(userInterfaceInfoAddRequest);
+        return ResultUtils.success(id);
     }
 
     /**

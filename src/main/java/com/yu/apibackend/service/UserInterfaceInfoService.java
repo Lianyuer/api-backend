@@ -1,6 +1,7 @@
 package com.yu.apibackend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.yu.apibackend.model.dto.userinterfaceinfo.UserInterfaceInfoAddRequest;
 import com.yu.apibackend.model.dto.userinterfaceinfo.UserInterfaceInfoQueryRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yu.apicommon.model.entity.UserInterfaceInfo;
@@ -26,6 +27,14 @@ public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
      * @return
      */
     QueryWrapper<UserInterfaceInfo> getQueryWrapper(UserInterfaceInfoQueryRequest userInterfaceInfoQueryRequest);
+
+    /**
+     * 创建用户调用接口关系
+     *
+     * @param userInterfaceInfoAddRequest
+     * @return
+     */
+    Long addUserInterfaceInfo(UserInterfaceInfoAddRequest userInterfaceInfoAddRequest);
 
     /**
      * 调用接口统计

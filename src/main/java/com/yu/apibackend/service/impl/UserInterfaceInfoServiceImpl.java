@@ -5,14 +5,23 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yu.apibackend.common.ErrorCode;
 import com.yu.apibackend.constant.CommonConstant;
+import com.yu.apibackend.exception.BusinessException;
 import com.yu.apibackend.exception.ThrowUtils;
 import com.yu.apibackend.mapper.UserInterfaceInfoMapper;
+import com.yu.apibackend.model.dto.userinterfaceinfo.UserInterfaceInfoAddRequest;
 import com.yu.apibackend.model.dto.userinterfaceinfo.UserInterfaceInfoQueryRequest;
 import com.yu.apibackend.model.enums.UserInterfaceInfoStatusEnum;
+import com.yu.apibackend.service.InterfaceInfoService;
 import com.yu.apibackend.service.UserInterfaceInfoService;
+import com.yu.apibackend.service.UserService;
 import com.yu.apibackend.utils.SqlUtils;
+import com.yu.apicommon.model.entity.InterfaceInfo;
+import com.yu.apicommon.model.entity.User;
 import com.yu.apicommon.model.entity.UserInterfaceInfo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 /**
  * @author liany
@@ -22,6 +31,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoMapper, UserInterfaceInfo>
         implements UserInterfaceInfoService {
+
+    @Resource
+    private UserService userService;
+
+    @Resource
+    private InterfaceInfoService interfaceInfoService;
+
+    @Resource
+    private UserInterfaceInfoMapper userInterfaceInfoMapper;
 
     /**
      * 校验
@@ -76,6 +94,37 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
     }
 
     /**
+     * 创建用户调用接口关系
+     *
+     * @param userInterfaceInfoAddRequest
+     * @return
+     */
+    @Override
+    public Long addUserInterfaceInfo(UserInterfaceInfoAddRequest userInterfaceInfoAddRequest) {
+        UserInterfaceInfo userInterfaceInfo = new UserInterfaceInfo();
+        BeanUtils.copyProperties(userInterfaceInfoAddRequest, userInterfaceInfo);
+        // 校验
+        this.validateUserInterfaceInfo(userInterfaceInfo, true);
+        // 判断用户是否存在
+        Long userId = userInterfaceInfoAddRequest.getUserId();
+        User user = userService.getById(userId);
+        ThrowUtils.throwIf(user == null, ErrorCode.NOT_FOUND_ERROR, "用户不存在");
+        // 判断接口是否存在
+        Long interfaceInfoId = userInterfaceInfoAddRequest.getInterfaceInfoId();
+        InterfaceInfo interfaceInfo = interfaceInfoService.getById(interfaceInfoId);
+        ThrowUtils.throwIf(interfaceInfo == null, ErrorCode.NOT_FOUND_ERROR, "接口不存在");
+        // 判断用户调用接口记录是否存在
+        boolean isUserInterfaceInfoExist = this.lambdaQuery()
+                .eq(UserInterfaceInfo::getUserId, userId)
+                .eq(UserInterfaceInfo::getInterfaceInfoId, interfaceInfoId)
+                .exists();
+        ThrowUtils.throwIf(isUserInterfaceInfoExist, ErrorCode.PARAMS_ERROR, "用户接口调用关系已存在");
+        boolean isSaved = this.save(userInterfaceInfo);
+        ThrowUtils.throwIf(!isSaved, ErrorCode.OPERATION_ERROR);
+        return userInterfaceInfo.getId();
+    }
+
+    /**
      * 调用接口统计
      *
      * @param interfaceInfoId
@@ -84,17 +133,38 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
      */
     @Override
     public boolean invokeCount(long interfaceInfoId, long userId) {
-        // 判断(其实这里还应该校验存不存在，这里就不用校验了，因为它不存在，也更新不到那条记录)
+        // 判断
         ThrowUtils.throwIf(interfaceInfoId <= 0 || userId <= 0, ErrorCode.PARAMS_ERROR);
         // 使用 UpdateWrapper 对象来构建更新条件
         UpdateWrapper<UserInterfaceInfo> updateWrapper = new UpdateWrapper<>();
         // 在 updateWrapper 中设置了两个条件：interfaceInfoId 等于给定的 interfaceInfoId 和 userId 等于给定的 userId。
-        updateWrapper.eq("interfaceInfoId", interfaceInfoId);
-        updateWrapper.eq("userId", userId);
-        // setSql 方法用于设置要更新的 SQL 语句。这里通过 SQL 表达式实现了两个字段的更新操作：
-        // leftNum=leftNum-1和totalNum=totalNum+1。意思是将leftNum字段减一，totalNum字段加一。
-        updateWrapper.setSql("leftNum = leftNum - 1, totalNum = totalNum + 1");
+        updateWrapper.eq("interfaceInfoId", interfaceInfoId)
+                .eq("userId", userId)
+                .gt("leftNum", 0)  // 确保剩余次数大于0
+                .setSql("leftNum = leftNum - 1, totalNum = totalNum + 1");
         // 最后，调用update方法执行更新操作，并返回更新是否成功的结果
-        return this.update(updateWrapper);
+        int rows = userInterfaceInfoMapper.update(null, updateWrapper);
+        if (rows > 0) {
+            // 扣减成功
+            return true;
+        } else {
+            UserInterfaceInfo userInterfaceInfo = this.lambdaQuery()
+                    .eq(UserInterfaceInfo::getInterfaceInfoId, interfaceInfoId)
+                    .eq(UserInterfaceInfo::getUserId, userId).one();
+            Integer leftNum = userInterfaceInfo == null ? null : userInterfaceInfo.getLeftNum();
+            if (leftNum == null) {
+                // 记录不存在，需要创建（首次调用）
+                UserInterfaceInfoAddRequest userInterfaceInfoAddRequest = new UserInterfaceInfoAddRequest();
+                userInterfaceInfoAddRequest.setInterfaceInfoId(interfaceInfoId);
+                userInterfaceInfoAddRequest.setUserId(userId);
+                userInterfaceInfoAddRequest.setTotalNum(1);
+                userInterfaceInfoAddRequest.setLeftNum(999);
+                addUserInterfaceInfo(userInterfaceInfoAddRequest);
+            } else if (leftNum <= 0) {
+                // 次数已用完
+                throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "调用次数不足");
+            }
+            return false;
+        }
     }
 }
